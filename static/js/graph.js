@@ -60,6 +60,7 @@ function show_gender_balance(ndx) {
 }
 
 
+
 // Average Salary Chart
 function show_average_salaries(ndx) {
     var dim = ndx.dimension(dc.pluck("sex"));
@@ -100,7 +101,7 @@ function show_average_salaries(ndx) {
         .dimension(dim)
         .group(averageSalaryByGender)
         .valueAccessor(function(d){
-            return d.value.average.toFixed(2);
+            return d.value.average;
         })
         .transitionDuration(500)
         .x(d3.scale.ordinal())
