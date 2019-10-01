@@ -14,6 +14,10 @@ function makeGraphs(error, salaryData) {
     // Create a crossfilter
     var ndx = crossfilter(salaryData);
 
+    salaryData.forEach(function(d) {
+        d.salary = parseInt(d.salary);
+    })
+
     show_discipline_selector(ndx);
     show_gender_balance(ndx);
     show_average_salaries(ndx);
@@ -55,6 +59,7 @@ function show_gender_balance(ndx) {
         .yAxis().ticks(20);
 }
 
+
 // Average Salary Chart
 function show_average_salaries(ndx) {
     var dim = ndx.dimension(dc.pluck("sex"));
@@ -71,7 +76,7 @@ function show_average_salaries(ndx) {
 
     function remove_item(p, v) {
         p.count--;
-        if (p.count == 0) {
+        if(p.count == 0) {
             p.total = 0;
             p.average = 0;
         } else {
@@ -86,4 +91,21 @@ function show_average_salaries(ndx) {
     }
 
     var averageSalaryByGender = dim.group().reduce(add_item, remove_item, initialise);
+
+    // Average salary DC barchart.
+    dc.barChart("#average-salary")
+        .width(400)
+        .height(300)
+        .margins({top: 10, right: 50, bottom: 30, left: 50})
+        .dimension(dim)
+        .group(averageSalaryByGender)
+        .valueAccessor(function(d){
+            return d.value.average.toFixed(2);
+        })
+        .transitionDuration(500)
+        .x(d3.scale.ordinal())
+        .xUnits(dc.units.ordinal)
+        .elasticY(true)
+        .xAxisLabel("Gender")
+        .yAxis().ticks(4);
 }
